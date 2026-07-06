@@ -2,18 +2,21 @@ package com.Youtube.hospitalManagement.entity;
 
 import com.Youtube.hospitalManagement.entity.type.BloodGroupType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @ToString
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(
         uniqueConstraints = {
                 //@UniqueConstraint(name="unique_patient_email", columnNames = {"email"}),
@@ -45,4 +48,12 @@ public class Patient {
 
     @Enumerated(EnumType.STRING)
     private BloodGroupType bloodGroup;
+
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JoinColumn(name="patient_insurance_id") // Owning Side
+    private Insurance insurance;
+
+    @OneToMany(mappedBy = "patient", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Appointment> appointments = new ArrayList<>();
 }
